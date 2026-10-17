@@ -1,0 +1,145 @@
+@model ProductCatalogApp.Models.Product
+@{
+    ViewData["Title"] = "Edit - " + Model.Name;
+    var categories = ViewBag.Categories as List<string> ?? new List<string>();
+}
+
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">Catalog</a></li>
+        <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@Model.Id" class="text-decoration-none">@Model.Name</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Edit</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+            <div class="card-header bg-dark text-white p-4">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-pencil-square fs-3 text-warning"></i>
+                    <div>
+                        <h4 class="mb-0 fw-bold">Edit Product (#@Model.Id)</h4>
+                        <p class="mb-0 small text-white-50">Modify product information and specifications</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body p-4 p-md-5">
+                <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <!-- Product Name -->
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label fw-semibold text-dark"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <!-- Category -->
+                        <div class="col-md-6">
+                            <label asp-for="Category" class="form-label fw-semibold text-dark"></label>
+                            <div class="input-group">
+                                <input asp-for="Category" class="form-control" list="categoryOptions" />
+                                <datalist id="categoryOptions">
+                                    @foreach (var cat in categories)
+                                    {
+                                        <option value="@cat"></option>
+                                    }
+                                </datalist>
+                            </div>
+                            <span asp-validation-for="Category" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="col-md-6">
+                            <label asp-for="Price" class="form-label fw-semibold text-dark"></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="Price" type="number" step="0.01" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Price" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <!-- Stock Quantity -->
+                        <div class="col-md-6">
+                            <label asp-for="StockQuantity" class="form-label fw-semibold text-dark"></label>
+                            <input asp-for="StockQuantity" type="number" class="form-control" />
+                            <span asp-validation-for="StockQuantity" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Rating -->
+                        <div class="col-md-6">
+                            <label asp-for="Rating" class="form-label fw-semibold text-dark"></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-star-fill text-warning"></i></span>
+                                <input asp-for="Rating" type="number" step="0.1" min="1.0" max="5.0" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Rating" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Image URL -->
+                    <div class="mb-3">
+                        <label asp-for="ImageUrl" class="form-label fw-semibold text-dark"></label>
+                        <input asp-for="ImageUrl" id="imageUrlInput" class="form-control" />
+                        <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Image Preview -->
+                    <div class="mb-3 text-center p-3 bg-light rounded-3 @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "d-none" : "")" id="previewContainer">
+                        <small class="text-muted d-block mb-2">Image Preview:</small>
+                        <img id="imagePreview" src="@Model.ImageUrl" alt="Preview" class="rounded-3 shadow-sm" style="max-height: 180px; object-fit: contain;" />
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label fw-semibold text-dark"></label>
+                        <textarea asp-for="Description" rows="4" class="form-control"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                            <i class="bi bi-arrow-left"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                            <i class="bi bi-save me-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const input = document.getElementById('imageUrlInput');
+        const container = document.getElementById('previewContainer');
+        const preview = document.getElementById('imagePreview');
+
+        function updatePreview() {
+            if (input && input.value && input.value.trim().length > 10) {
+                preview.src = input.value.trim();
+                container.classList.remove('d-none');
+            } else {
+                container.classList.add('d-none');
+            }
+        }
+
+        if (input) {
+            input.addEventListener('input', updatePreview);
+            updatePreview();
+        }
+    </script>
+}

@@ -1,0 +1,115 @@
+@model ProductCatalogApp.Models.HomeDashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- Hero Section -->
+<div class="p-5 mb-4 bg-white rounded-4 shadow-sm border">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-3">
+                <i class="bi bi-award-fill me-1"></i> ASP.NET MVC Architecture
+            </span>
+            <h1 class="display-5 fw-bold text-dark mb-3">Product Catalog Management</h1>
+            <p class="lead text-secondary mb-4">
+                A simple and powerful catalog system built with ASP.NET Core MVC. Explore, manage, filter, and organize products effortlessly.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <a asp-controller="Product" asp-action="Index" class="btn btn-primary btn-lg px-4 gap-2 d-inline-flex align-items-center shadow-sm">
+                    <i class="bi bi-grid-3x3-gap-fill"></i> Browse Full Catalog
+                </a>
+                <a asp-controller="Product" asp-action="Create" class="btn btn-outline-secondary btn-lg px-4 gap-2 d-inline-flex align-items-center">
+                    <i class="bi bi-plus-circle"></i> Add New Product
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-5 text-center d-none d-lg-block">
+            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format&fit=crop&q=80" 
+                 alt="Catalog Showcase" class="img-fluid rounded-4 shadow" style="max-height: 280px; object-fit: cover; width: 100%;" />
+        </div>
+    </div>
+</div>
+
+<!-- Metrics Cards -->
+<div class="row g-3 mb-5">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="bg-primary-subtle text-primary rounded-4 p-3 me-3">
+                    <i class="bi bi-box-seam fs-2"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted text-uppercase mb-1 small fw-bold">Total Products</h6>
+                    <h2 class="fw-bold mb-0 text-dark">@Model.TotalProducts</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="bg-success-subtle text-success rounded-4 p-3 me-3">
+                    <i class="bi bi-tags fs-2"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted text-uppercase mb-1 small fw-bold">Categories</h6>
+                    <h2 class="fw-bold mb-0 text-dark">@Model.TotalCategories</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+            <div class="card-body d-flex align-items-center p-4">
+                <div class="bg-info-subtle text-info rounded-4 p-3 me-3">
+                    <i class="bi bi-check-circle fs-2"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted text-uppercase mb-1 small fw-bold">Items In Stock</h6>
+                    <h2 class="fw-bold mb-0 text-dark">@Model.TotalInStock</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Products Section -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-0 text-dark">Featured Top-Rated Products</h3>
+        <p class="text-muted small mb-0">Handpicked high-rated items from your catalog</p>
+    </div>
+    <a asp-controller="Product" asp-action="Index" class="btn btn-sm btn-link text-decoration-none fw-semibold">
+        View All <i class="bi bi-arrow-right"></i>
+    </a>
+</div>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4 mb-4">
+    @foreach (var product in Model.FeaturedProducts)
+    {
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden product-card transition">
+                <div class="position-relative bg-light" style="height: 200px;">
+                    <img src="@product.ImageUrl" class="w-100 h-100" style="object-fit: cover;" 
+                         alt="@product.Name" onerror="this.src='https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop&q=80'" />
+                    <span class="badge bg-dark bg-opacity-75 position-absolute top-0 end-0 m-2 rounded-pill px-2 py-1 small">
+                        <i class="bi bi-star-fill text-warning"></i> @product.Rating
+                    </span>
+                </div>
+                <div class="card-body d-flex flex-column p-3">
+                    <span class="badge bg-light text-secondary border align-self-start mb-2 small">@product.Category</span>
+                    <h6 class="card-title fw-bold text-dark text-truncate mb-1" title="@product.Name">@product.Name</h6>
+                    <p class="card-text text-muted small text-truncate-2 mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 38px;">
+                        @product.Description
+                    </p>
+                    <div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top">
+                        <span class="fs-5 fw-bold text-primary">$@product.Price.ToString("F2")</span>
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                            Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
